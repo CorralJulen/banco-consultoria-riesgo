@@ -1,14 +1,5 @@
+streamlit==1.41.0
 pandas
 numpy
-scikit-learn
-xgboost
-imbalanced-learn
-shap
-matplotlib
-seaborn
 plotly
-streamlit
-jupyter
-xgboost
-shap
-plotly
+altair==4.2.2
