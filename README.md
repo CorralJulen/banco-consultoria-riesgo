@@ -2,17 +2,19 @@
 
 > Proyecto de consultoría de datos aplicado al sector bancario, desarrollado como parte del Máster en Big Data, Business Analytics e Inteligencia Artificial.
 
+[![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://banco-consultoria-riesgo.streamlit.app)
+![Python](https://img.shields.io/badge/Python-3.10+-blue)
+![License](https://img.shields.io/badge/license-MIT-green)
+
 ---
 
 ## 📋 Descripción
 
-Este repositorio simula un encargo de consultoría de datos para una entidad financiera ficticia. El objetivo es demostrar cómo el análisis de datos y el machine learning pueden apoyar la **toma de decisiones estratégicas** en tres áreas críticas de la banca moderna:
+Este repositorio simula un encargo real de consultoría de datos para una entidad financiera. El objetivo es demostrar cómo el análisis de datos y el machine learning apoyan la **toma de decisiones estratégicas** en tres áreas críticas de la banca moderna.
 
-- **Riesgo de crédito**: ¿A quién conceder un préstamo y en qué condiciones?
-- **Detección de fraude**: ¿Cómo identificar transacciones fraudulentas en tiempo real?
-- **Rentabilidad y eficiencia**: ¿Qué factores determinan la salud financiera de una entidad?
+El proyecto incluye análisis exploratorio, modelos predictivos, interpretabilidad con SHAP y un dashboard interactivo desplegado en producción — todo documentado con orientación de negocio, no solo técnica.
 
-El enfoque combina rigor técnico con orientación al negocio: cada módulo incluye no solo el modelo, sino también las **conclusiones accionables** que un consultor presentaría a dirección.
+🔗 **[Ver dashboard en vivo](https://banco-consultoria-riesgo.streamlit.app)**
 
 ---
 
@@ -22,22 +24,30 @@ El enfoque combina rigor técnico con orientación al negocio: cada módulo incl
 banco-consultoria-riesgo/
 │
 ├── datos/
-│   ├── raw/              # Datasets originales sin modificar
-│   └── procesados/       # Datos limpios listos para modelar
+│   ├── raw/                    # Datasets originales sin modificar
+│   └── procesados/             # Datos limpios listos para modelar
 │
 ├── notebooks/
 │   ├── 01_riesgo_credito/
+│   │   ├── 01_exploracion.ipynb
+│   │   ├── 02_preprocesamiento.ipynb
+│   │   └── 03_modelado.ipynb
 │   ├── 02_deteccion_fraude/
+│   │   ├── 01_exploracion.ipynb
+│   │   ├── 02_preprocesamiento.ipynb
+│   │   └── 03_modelado.ipynb
 │   └── 03_rentabilidad/
+│       ├── 01_exploracion.ipynb
+│       └── 02_analisis.ipynb
 │
 ├── src/
-│   └── utils.py          # Funciones auxiliares compartidas
+│   └── utils.py
 │
 ├── dashboard/
-│   └── app.py            # Dashboard interactivo (Streamlit)
+│   └── app.py                  # Dashboard Streamlit desplegado en producción
 │
-└── informe/
-    └── executive_summary.pdf
+├── requirements.txt
+└── README.md
 ```
 
 ---
@@ -48,27 +58,38 @@ banco-consultoria-riesgo/
 
 **Pregunta de negocio:** ¿Qué variables predicen mejor el impago de un cliente?
 
-- Dataset: [German Credit Dataset](https://archive.ics.uci.edu/dataset/144/statlog+german+credit+data) (UCI Machine Learning Repository)
-- Técnicas: Análisis exploratorio · Regresión logística · Random Forest · XGBoost
-- Interpretabilidad: SHAP values para explicar las predicciones en lenguaje de negocio
-- **Entregable clave:** Perfil de cliente de alto riesgo + recomendaciones de política crediticia
+- **Dataset:** [German Credit Dataset](https://archive.ics.uci.edu/dataset/144/statlog+german+credit+data) (UCI) — 1.000 clientes, 20 variables
+- **Técnicas:** Regresión Logística · Random Forest · XGBoost · SMOTE · SHAP
+- **Resultado:** La Regresión Logística obtiene el mejor AUC-ROC (**0.7977**), superando a modelos más complejos. El análisis SHAP revela que el estado de la cuenta corriente y la duración del crédito son los predictores más potentes.
+- **Entregable:** Simulador interactivo de scoring disponible en el dashboard
 
 ### Módulo 2 — Detección de Fraude
 
 **Pregunta de negocio:** ¿Cómo minimizar las pérdidas por fraude sin penalizar a clientes legítimos?
 
-- Dataset: [Credit Card Fraud Detection](https://www.kaggle.com/datasets/mlg-ulb/creditcardfraud) (Kaggle)
-- Técnicas: Tratamiento de clases desbalanceadas (SMOTE) · Isolation Forest · XGBoost
-- Métricas: Precision, Recall, F1 y AUC-ROC 
-- **Entregable clave:** Umbral de decisión óptimo según coste de falso positivo vs. falso negativo
+- **Dataset:** [Credit Card Fraud Detection](https://www.kaggle.com/datasets/mlg-ulb/creditcardfraud) (Kaggle) — 284.807 transacciones, 0.17% fraude
+- **Técnicas:** Isolation Forest · XGBoost · SMOTE (sampling_strategy=0.1) · Curva Precision-Recall
+- **Resultado:** XGBoost alcanza un Average Precision de **0.852** — 500x mejor que el baseline aleatorio. Detecta 86 de 98 fraudes reales con 131 falsas alarmas (umbral óptimo F1 = 0.85).
+- **Entregable:** Análisis del umbral de decisión con implicaciones de negocio
 
 ### Módulo 3 — Rentabilidad y Eficiencia Bancaria
 
-**Pregunta de negocio:** ¿Qué diferencia a los bancos más rentables del resto?
+**Pregunta de negocio:** ¿Qué factores determinan la rentabilidad y eficiencia de una entidad bancaria?
 
-- Dataset: Datos públicos del Banco Central Europeo (BCE) / Banco de España
-- Técnicas: Análisis de ratios financieros (ROE, ROA, CIR) · Clustering · Visualización
-- **Entregable clave:** Benchmarking del sector y palancas de mejora de la rentabilidad
+- **Dataset:** [FDIC BankFind Suite API](https://banks.data.fdic.gov/docs/) — 5.000+ bancos americanos, datos 2019-2023
+- **Técnicas:** Análisis de ratios (ROA, ROE, NIM, CIR) · K-Means clustering · PCA · Benchmarking sectorial
+- **Resultado:** Se identifican 4 perfiles bancarios distintos. La correlación CIR/ROA de **-0.75** confirma que la eficiencia operativa es la palanca más directa hacia la rentabilidad.
+- **Entregable:** Mapa de posicionamiento sectorial + radar chart por perfil
+
+---
+
+## 📊 Resultados clave
+
+| Módulo | Modelo ganador | Métrica principal | Resultado |
+|--------|---------------|-------------------|-----------|
+| Riesgo de Crédito | Regresión Logística | AUC-ROC | **0.7977** |
+| Detección de Fraude | XGBoost | Average Precision | **0.852** |
+| Rentabilidad | K-Means (k=4) | Silhouette Score | **0.33** |
 
 ---
 
@@ -82,6 +103,7 @@ banco-consultoria-riesgo/
 | Interpretabilidad | shap |
 | Visualización | matplotlib · seaborn · plotly |
 | Dashboard | Streamlit |
+| Datos externos | FDIC BankFind Suite API |
 | Entorno | Jupyter Notebook |
 
 ---
@@ -90,7 +112,7 @@ banco-consultoria-riesgo/
 
 ### 1. Clonar el repositorio
 ```bash
-git clone https://github.com/tu-usuario/banco-consultoria-riesgo.git
+git clone https://github.com/corraljulen/banco-consultoria-riesgo.git
 cd banco-consultoria-riesgo
 ```
 
@@ -100,28 +122,19 @@ pip install -r requirements.txt
 ```
 
 ### 3. Ejecutar los notebooks
-Abrir Jupyter y navegar a la carpeta `notebooks/`. Se recomienda seguir el orden numérico de los módulos.
+Abrir Jupyter y navegar a la carpeta `notebooks/`. Seguir el orden numérico de los módulos.
 
-### 4. Ver el dashboard
+### 4. Ver el dashboard en local
 ```bash
 streamlit run dashboard/app.py
 ```
 
 ---
 
-## 📊 Dashboard
+## 🤖 Nota sobre el proceso de desarrollo
 
-El dashboard interactivo permite explorar los resultados de los tres módulos de forma visual e intuitiva, orientado a un perfil no técnico (dirección, comités de riesgo).
+Este proyecto fue desarrollado mediante **vibe coding** — una metodología de desarrollo asistido por IA en la que el programador describe los objetivos en lenguaje natural y construye el proyecto de forma iterativa con un modelo de lenguaje (en este caso, Claude de Anthropic).
 
-🔗 **[Ver dashboard en vivo](https://tu-usuario-banco-consultoria.streamlit.app)** *(disponible próximamente)*
-
----
-
-## 📄 Informe ejecutivo
-
-El informe resume los hallazgos principales de los tres módulos en formato de presentación ejecutiva, sintetizando las conclusiones de negocio más relevantes.
-
-📥 [Descargar Executive Summary (PDF)](informe/executive_summary.pdf) *(disponible próximamente)*
 
 ---
 
@@ -133,6 +146,5 @@ Este proyecto es de carácter **académico y divulgativo**. Los datasets utiliza
 
 ## 👤 Autor
 
-**Julen** · Máster en Big Data, Business Analytics e IA  
-📍 Barakaldo, País Vasco  
-🔗 [LinkedIn] https://www.linkedin.com/in/julen-corral-lop-486295219/ 
+**Julen Corral** · Máster en Big Data, Business Analytics e IA
+📍 Bilbao, País Vasco
